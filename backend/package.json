@@ -1,0 +1,18 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Real-time hardware viewer app backend.",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "author": "H M Moniruzzaman",
+  "license": "MIT",
+  "dependencies": {
+    "socket.io": "^4.1.2",
+    "systeminformation": "^5.7.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
