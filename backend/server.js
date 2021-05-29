@@ -6,12 +6,14 @@ const http = require('http');
 const hostname = '127.0.0.1';
 const port = 3000;
 
+// Creating the backend server
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
   res.end('Hardware Viewer server is running');
 });
 
+// Listening to particular host and port
 server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });
@@ -27,7 +29,7 @@ io.on("connection", socket => {
     systemInfo()
       .then(hwData => {
         socket.emit("hwdata", hwData)
-        console.log(hwData)
+        // console.log(hwData)
       })
     // console.log("timer");
   }, 1000)
@@ -42,38 +44,37 @@ io.on("connection", socket => {
 
 async function systemInfo() {
   let hwData = {};
-  try {
-    
-    // const system = await si.system();
-    // hwData.device = system.model;
-    // hwData.deviceManufacturer = system.manufacturer;
 
-    // const cpu = await si.cpu();
-    // hwData.cpuManufacturer = cpu.manufacturer;
-    // hwData.cpuModel = cpu.brand;
-    // hwData.physicalCores = cpu.physicalCores;
+  try {
+    const system = await si.system();
+    hwData.device = system.model;
+    hwData.deviceManufacturer = system.manufacturer;
+
+    const cpu = await si.cpu();
+    hwData.cpuManufacturer = cpu.manufacturer;
+    hwData.cpuModel = cpu.brand;
+    hwData.Cores = cpu.physicalCores;
 
     const cpuLoad = await si.currentLoad();
     hwData.cpuLoad = cpuLoad.currentLoad.toFixed(2);
 
-    // const memory = await si.mem();
-    // hwData.totalMemory = bytesToSize(memory.total.toFixed(2));
-    // hwData.freeMemory = bytesToSize(memory.free.toFixed(2));
-    // hwData.usedMemory = bytesToSize(memory.used.toFixed(2));
+    const memory = await si.mem();
+    hwData.totalMemory = bytesToSize(memory.total.toFixed(2));
+    hwData.freeMemory = bytesToSize(memory.free.toFixed(2));
+    hwData.usedMemory = bytesToSize(memory.used.toFixed(2));
 
-    // const netStats = await si.networkStats();
-    // let networks = [];
-    // let netStat = {};
+    const netStats = await si.networkStats();
+    let networks = [];
+    let netStat = {};
     
-    // for (i = 0; i < netStats.length; i++){
-    //   netStat.interface = netStats[i].iface;
-    //   netStat.totalReceived = bytesToSize(netStats[i].rx_bytes);
-    //   netStat.totalTranferred = bytesToSize(netStats[i].tx_bytes);
-    //   networks.push(netStat);
-    // }
-    // hwData.networks = networks;
+    for (i = 0; i < netStats.length; i++){
+      netStat.interface = netStats[i].iface;
+      netStat.totalReceived = bytesToSize(netStats[i].rx_bytes);
+      netStat.totalTransferred = bytesToSize(netStats[i].tx_bytes);
+      networks.push(netStat);
+    }
+    hwData.networks = networks;
 
-    // socket.broadcast.emit("hwdata", hwData);
     return hwData;
 
   } catch (e) {
@@ -88,6 +89,6 @@ function bytesToSize(bytes) {
   return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
 }
 
-function getRandomValue(){
-  return Math.floor(Math.random() * (50 - 5 + 1)) + 5;
-}
+// function getRandomValue(){
+//   return Math.floor(Math.random() * (50 - 5 + 1)) + 5;
+// }
