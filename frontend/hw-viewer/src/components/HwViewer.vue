@@ -48,10 +48,10 @@ export default class HwViewer extends Vue {
   }
 
   created() {
-    console.log("Created component");
+    // console.log("Created component");
     socket.on("hwdata", data => {
       this.cpuLoad = data;
-      console.log(data);
+      // console.log(data);
     })
   }
 

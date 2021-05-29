@@ -36,13 +36,7 @@ io.on("connection", socket => {
     clearInterval(timer);
     console.log("Socket Disconnected")
   })
-  /* setInterval(() => {
-    systemInfo()
-      .then(hwData => {
-        socket.broadcast.emit("hwdata", getRandomValue())
-        // console.log(hwData)
-      })
-  }, 1000) */
+
 });
 
 
@@ -60,7 +54,7 @@ async function systemInfo() {
     // hwData.physicalCores = cpu.physicalCores;
 
     const cpuLoad = await si.currentLoad();
-    const load = cpuLoad.currentLoad;  //.toFixed(2);
+    hwData.cpuLoad = cpuLoad.currentLoad.toFixed(2);
 
     // const memory = await si.mem();
     // hwData.totalMemory = bytesToSize(memory.total.toFixed(2));
@@ -80,7 +74,7 @@ async function systemInfo() {
     // hwData.networks = networks;
 
     // socket.broadcast.emit("hwdata", hwData);
-    return load;
+    return hwData;
 
   } catch (e) {
       console.log(e);
