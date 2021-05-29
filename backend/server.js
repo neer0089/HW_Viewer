@@ -24,7 +24,11 @@ io.on("connection", socket => {
   console.log("Socket Connected")
 
   let timer = setInterval(() => {
-    socket.emit("hwdata", getRandomValue())
+    systemInfo()
+      .then(hwData => {
+        socket.emit("hwdata", hwData)
+        console.log(hwData)
+      })
     // console.log("timer");
   }, 1000)
 

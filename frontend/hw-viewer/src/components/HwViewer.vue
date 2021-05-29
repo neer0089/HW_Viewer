@@ -50,19 +50,8 @@ export default class HwViewer extends Vue {
   created() {
     console.log("Created component");
     socket.on("hwdata", data => {
+      this.cpuLoad = data;
       console.log(data);
-    })
-  }
-
-  getRealtimeData() {
-    socket.on("hwdata", fetchedData => {
-      // this.cpuLoad = fetchedData;
-      console.log(fetchedData);
-      // this.cpuLoad = fetchedData.cpuLoad;
-      // let dataForChart: number[] = [];
-      // this.dataForChart.push(fetchedData.cpuLoad)
-      // // let dataChart: number = fetchedData.cpuLoad;
-      // this.setData(dataForChart);
     })
   }
 
