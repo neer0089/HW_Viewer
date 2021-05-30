@@ -45,9 +45,13 @@
 
           </div>
         </div>
+
+      <div class="box chart-box" v-if="hwData.cpuLoad">
+        <LineChart :chartData="chartData" :options="chartOptions" :styles="chartStyles"/>
+      </div>
+
       </div>
     </div>
-    <!-- <LineChart :chartData="data" :options="options"/> -->
   </div>
 </template>
 
@@ -70,16 +74,19 @@ export default class HwViewer extends Vue {
     totalMemory: "",
     freeMemory: "",
     usedMemory: "",
-    networks: [{totalReceived: 0, totalTransferred: 0}],
+    networks: [{totalReceived: null, totalTransferred: null}],
     cpuModel: "",
     cpuManufacturer: "",
-    cpuCores: 0,
-    cpuLoad: 0
+    cpuCores: null,
+    cpuLoad: null
   };
-  data: any = null;
-  dataForChart: number[] = [];
+  chartData: any = null;
 
-  options = {
+  get chartStyles() {
+    return {position: "relative", height: "100%", width: "100%"};
+  }
+
+  chartOptions = {
     scales: {
       yAxes: [{
         scaleLabel: {
@@ -87,26 +94,29 @@ export default class HwViewer extends Vue {
           labelString: 'Percentage CPU used'
         }
       }]
-    }     
+    },
+    responsive: true, 
+    maintainAspectRatio: false
   }
 
-  setData(fetchedData: number[]) {
-    this.data = {
+  setChartData(chartData: number) {
+    this.chartData = {
       datasets: [
         {
           label: "CPU Load",
           backgroundColor: "#1A73E8",
-          data: fetchedData
+          data: [chartData]
         }
       ]
     }
   }
 
   created() {
-    console.log(this.hwData.device);
-    socket.on("hwdata", data => {
-      this.hwData = data;
-      // console.log(data);
+    // console.log(this.hwData.device);
+    socket.on("hwdata", fetchedHwData => {
+      this.hwData = fetchedHwData;
+      this.setChartData(fetchedHwData.cpuLoad);
+      // console.log(fetchedHwData.cpuLoad);
     })
   }
 
@@ -158,6 +168,12 @@ export default class HwViewer extends Vue {
   width: 50%;
   min-width: 300px;
   text-align: center;
+}
+
+.chart-box {
+  margin: auto;
+  height: 300px;
+  width: 400px;
 }
 
 </style>

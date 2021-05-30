@@ -7,11 +7,7 @@ const hostname = '127.0.0.1';
 const port = 3000;
 
 // Creating the backend server
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hardware Viewer server is running');
-});
+const server = http.createServer();
 
 // Listening to particular host and port
 server.listen(port, hostname, () => {
@@ -19,7 +15,11 @@ server.listen(port, hostname, () => {
 });
 
 
-const io = require("socket.io")(server);
+const io = require("socket.io")(server, {
+  cors: {
+    origin: '*',
+  }
+});
 
 
 io.on("connection", socket => {
@@ -28,11 +28,9 @@ io.on("connection", socket => {
   let timer = setInterval(() => {
     systemInfo()
       .then(hwData => {
-        socket.emit("hwdata", hwData)
-        // console.log(hwData)
-      })
-    // console.log("timer");
-  }, 1000)
+        socket.emit("hwdata", hwData);
+      });
+  }, 1000);
 
   socket.on('disconnect', () => {
     clearInterval(timer);
@@ -59,14 +57,13 @@ async function systemInfo() {
     hwData.cpuLoad = cpuLoad.currentLoad.toFixed(2);
 
     const memory = await si.mem();
-    hwData.totalMemory = bytesToSize(memory.total.toFixed(2));
-    hwData.freeMemory = bytesToSize(memory.free.toFixed(2));
-    hwData.usedMemory = bytesToSize(memory.used.toFixed(2));
+    hwData.totalMemory = bytesToSize(memory.total);
+    hwData.freeMemory = bytesToSize(memory.available);
+    hwData.usedMemory = bytesToSize(memory.active);
 
     const netStats = await si.networkStats();
     let networks = [];
     let netStat = {};
-    
     for (i = 0; i < netStats.length; i++){
       netStat.interface = netStats[i].iface;
       netStat.totalReceived = bytesToSize(netStats[i].rx_bytes);
@@ -82,13 +79,14 @@ async function systemInfo() {
   }
 }
 
-function bytesToSize(bytes) {
-  var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  if (bytes == 0) return '0 Byte';
-  var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-  return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
-}
+function bytesToSize(bytes, decimals = 2) {
+  if (bytes === 0) return '0 Bytes';
 
-// function getRandomValue(){
-//   return Math.floor(Math.random() * (50 - 5 + 1)) + 5;
-// }
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
