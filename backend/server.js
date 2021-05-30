@@ -53,7 +53,7 @@ async function systemInfo() {
     const cpu = await si.cpu();
     hwData.cpuManufacturer = cpu.manufacturer;
     hwData.cpuModel = cpu.brand;
-    hwData.Cores = cpu.physicalCores;
+    hwData.cpuCores = cpu.cores;
 
     const cpuLoad = await si.currentLoad();
     hwData.cpuLoad = cpuLoad.currentLoad.toFixed(2);

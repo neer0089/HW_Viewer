@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="columns is-centered">
-      <div class="column is-two-thirds is-mobile">
+      <div class="column is-half is-mobile">
         <div class="card">
           <header class="card-header">
             <div class="card-title">
@@ -13,8 +13,8 @@
               <div class="device">
                 <div class="tag is-medium header-tag">Device Information</div>
                 <div class="info">
-                  <div class="box">Device name: {{ hwData.device }}</div>
-                  <div class="box">Device manufacturer: {{ hwData.deviceManufacturer }}</div>
+                  <div class="box">Model: {{ hwData.device }}</div>
+                  <div class="box">Manufacturer: {{ hwData.deviceManufacturer }}</div>
                 </div>
               </div>
               <div class="device">
@@ -42,7 +42,7 @@
                 </div>
               </div>
             </div>
-            <!-- <h1>Hardware data: {{ hwData }}</h1> -->
+
           </div>
         </div>
       </div>
@@ -64,7 +64,18 @@ let socket = io("http://localhost:3000");
   }
 })
 export default class HwViewer extends Vue {
-  hwData = {};
+  hwData = {
+    device: "",
+    deviceManufacturer: "",
+    totalMemory: "",
+    freeMemory: "",
+    usedMemory: "",
+    networks: [{totalReceived: 0, totalTransferred: 0}],
+    cpuModel: "",
+    cpuManufacturer: "",
+    cpuCores: 0,
+    cpuLoad: 0
+  };
   data: any = null;
   dataForChart: number[] = [];
 
@@ -92,7 +103,7 @@ export default class HwViewer extends Vue {
   }
 
   created() {
-    // console.log("Created component");
+    console.log(this.hwData.device);
     socket.on("hwdata", data => {
       this.hwData = data;
       // console.log(data);
@@ -145,6 +156,7 @@ export default class HwViewer extends Vue {
 
 .device {
   width: 50%;
+  min-width: 300px;
   text-align: center;
 }
 
