@@ -39,7 +39,10 @@ io.on("connection", socket => {
 
 });
 
-
+/**
+ * Gets hardware information of the system.
+ * @returns {object}  hardware information.
+ */
 async function systemInfo() {
   let hwData = {};
 
@@ -79,6 +82,12 @@ async function systemInfo() {
   }
 }
 
+/**
+ * Converts bytes to respective sizes in KB, MB, GB, etc.
+ * @param   {number} bytes     to convert
+ * @param   {number} decimals  how many decimal place to keep
+ * @returns {string}           sizes in KB, MB, GB, etc.
+ */
 function bytesToSize(bytes, decimals = 2) {
   if (bytes === 0) return '0 Bytes';
 

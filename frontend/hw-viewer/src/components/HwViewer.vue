@@ -112,11 +112,9 @@ export default class HwViewer extends Vue {
   }
 
   created() {
-    // console.log(this.hwData.device);
     socket.on("hwdata", fetchedHwData => {
       this.hwData = fetchedHwData;
       this.setChartData(fetchedHwData.cpuLoad);
-      // console.log(fetchedHwData.cpuLoad);
     })
   }
 
